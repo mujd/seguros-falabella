@@ -8,7 +8,7 @@ const validNames = {
     message: '{VALUE} no es un nombre válido'
 };
 const productSchema = new Schema({
-    name: { type: String, required: true, enum: validNames },
+    name: { type: String, required: [true, validNames.message], enum: validNames },
     sellIn: { type: Number, default: 0, min: 0 },
     price: { type: Number, default: 0, min: 0 },
     status: { type: Boolean, default: true },
