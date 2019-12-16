@@ -12,7 +12,7 @@ const productSchema = new Schema({
     sellIn: { type: Number, default: 0, min: 0 },
     price: { type: Number, default: 0, min: 0 },
     status: { type: Boolean, default: true },
-    createdAt: { type: Date, default: createdDate },
+    createdAt: { type: Date, default: createdDate }
 });
 
 productSchema.plugin(uniqueValidator, { message: '{PATH} debe ser único' });
