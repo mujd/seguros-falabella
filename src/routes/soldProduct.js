@@ -10,37 +10,93 @@ const Product = mongoose.model('Product');
 router.get('/evaluateProducts/:days', async(req, res) => {
     let days = Number(req.params.days);
     let daysCounted = 0;
-    await SoldProduct.find({}).populate('product', 'name sellIn price').exec((err, soldProductDB) => {
-        if (err) {
-            return res.status(400).json({
-                ok: false,
-                mensaje: 'Error cargando productos',
-                error: err
-            });
-        }
-        var json = [];
-        var anterior_id = null || undefined || 0;
-        while (daysCounted < days) {
-            daysCounted++;
-            json.push({
-                dia: daysCounted - 1,
-                detalle: []
-            });
-            let del = daysCounted - 1;
-            for (var item in soldProductDB) {
-                if (soldProductDB[item].id != anterior_id) {
-                    json[json.length - 1].detalle.push({
-                        name: soldProductDB[item].product.name,
-                        sellIn: soldProductDB[item].product.sellIn - del,
-                        price: soldProductDB[item].product.price - del
-                    });
-                    anterior_id = soldProductDB[item]._id;
-                }
+    try {
+        await SoldProduct.find({}).populate('product', 'name sellIn price').exec((err, soldProductDB) => {
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'Error cargando productos vendidos',
+                    error: err
+                });
             }
-        }
-        res.status(200).json(json);
-    });
+            let json = [];
+            while (daysCounted < days) {
+                daysCounted++;
+                json.push({
+                    dia: daysCounted - 1,
+                    detalle: []
+                });
+                productRules(json, soldProductDB, daysCounted, days);
+            }
+            res.status(200).json(json);
+        });
+    } catch (err) {
+        res.status(500).json({
+            ok: false,
+            mensaje: 'Error al cargar los productos vendidos',
+            error: err
+        });
+    }
 });
+
+function productRules(json, soldProductDB, daysCounted, days) {
+    for (var item in soldProductDB) {
+        let anterior_id = null || undefined || 0;
+        let productName = soldProductDB[item].product.name;
+        let productSellIn = soldProductDB[item].product.sellIn;
+        let productPrice = soldProductDB[item].product.price;
+        let realDay = daysCounted;
+        if (productName === 'Full cobertura') {
+            productSellIn -= daysCounted - 1;
+            if (daysCounted <= 10) {
+                productPrice += daysCounted - 2;
+            } else if (daysCounted <= 5) {
+                productPrice += daysCounted - 3;
+            } else {
+                productPrice += daysCounted - 1;
+            }
+            if (productSellIn <= 0) {
+                productPrice = 0;
+            }
+        } else if (productName === 'Mega cobertura') {
+            productPrice = 180;
+            if (productSellIn <= 0) {
+                productSellIn = 1;
+            }
+        } else if (productName === 'Full cobertura Super duper') {
+            productSellIn -= daysCounted - 1;
+            if (daysCounted <= 10) {
+                productPrice += daysCounted - 2;
+            } else if (daysCounted <= 5) {
+                productPrice += daysCounted - 3;
+            } else {
+                productPrice += daysCounted - 1;
+            }
+            if (productSellIn <= 0) {
+                productPrice = 0;
+            }
+        } else if (productName === 'Baja cobertura') {
+            productSellIn -= daysCounted - 1;
+            productPrice -= daysCounted - 1;
+        } else if (productName === 'Super avance') {
+            productSellIn -= daysCounted - 1;
+            productPrice -= (daysCounted - 1) * 2;
+        } else if (productSellIn < 0) {
+            productPrice -= discountPrice - 1;
+        } else if (productName !== 'Mega cobertura' && productPrice >= 100) {
+            productPrice = 100;
+        }
+        if (soldProductDB[item].id != anterior_id) {
+            json[json.length - 1].detalle.push({
+                name: productName,
+                sellIn: productSellIn,
+                price: productPrice
+            });
+            anterior_id = soldProductDB[item]._id;
+        }
+    }
+    return json;
+}
 // ============================
 // Listar todos los productos vendidos
 // ============================
