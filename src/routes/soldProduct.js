@@ -45,7 +45,6 @@ function productRules(json, soldProductDB, daysCounted, days) {
         let productName = soldProductDB[item].product.name;
         let productSellIn = soldProductDB[item].product.sellIn;
         let productPrice = soldProductDB[item].product.price;
-        let realDay = daysCounted;
         if (productName === 'Full cobertura') {
             productSellIn -= daysCounted - 1;
             if (daysCounted <= 10) {
