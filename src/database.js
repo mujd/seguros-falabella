@@ -22,12 +22,14 @@ mongoose.connection.on('error', (error) => {
     console.log('Mongo ERROR: ' + error)
 })
 
-let mongoUrl = 'localhost';
+// let mongoUrl = 'localhost';
+let mongoUrl = 'mongodb://localhost:27017/segurosFalabellaDB';
 if (process.env.DATABASE_HOST) {
-    mongoUrl = 'mongo';
+    // mongoUrl = 'mongo';
+    mongoUrl = 'mongodb://max-rojas:segurosfalabella@cluster0-shard-00-00-f42f4.mongodb.net:27017,cluster0-shard-00-01-f42f4.mongodb.net:27017,cluster0-shard-00-02-f42f4.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true&w=majority';
 }
 const mongoDB = async() => {
-    await mongoose.connect(`mongodb://${mongoUrl}:27017/segurosFalabellaDB`, {
+    await mongoose.connect(mongoUrl, {
         useCreateIndex: true,
         useNewUrlParser: true,
         useUnifiedTopology: true,

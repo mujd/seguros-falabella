@@ -1,7 +1,8 @@
 # **Proyecto test Seguros Falabella**
 
-Proyecto creado por: Maximiliano Rojas Flores
-
+### Proyecto creado por: Maximiliano Rojas Flores
+### URL COLECCIÓN POSTMAN
+https://documenter.getpostman.com/view/1502131/SWEB3GZ7
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
 # **Seguros Falabella**
 
